@@ -16,22 +16,29 @@
 
 struct critbit;
 
-/* Creates a critbit */
+/* Creates a crit-bit */
 static inline struct critbit *critbit_create(void);
 
-/* Deletes the given critbit */
+/* Deletes the given crit-bit */
 static inline void critbit_delete(struct critbit *cb);
 
-/* Adds v to crit bit. Returs 1 on success, 0 if v already exists. */
+/* Adds v to crit-bit. Returs 1 on success, 0 if v already exists
+ * in the crit-bit.
+ */
 static inline int critbit_add(struct critbit *cb, uintptr_t v);
 
-/* Removes v from crit bit. Returns 1 on success, 0 if v doesn't exist. */
+/* Removes v from crit-bit. Returns 1 on success, 0 if v doesn't exist
+ * in the crit-bit.
+ */
 static inline int critbit_remove(struct critbit *cb, uintptr_t v);
 
-/* Returns 1 if critbit contains v, otherwise returns 0. */
+/* Returns 1 if crit-bit contains v, otherwise returns 0. */
 static inline int critbit_contains(const struct critbit *cb, uintptr_t v);
 
-/* Sorts the array a. Returns the size of sorted array. */
+/* Sorts the array a of size n. Returns the size of sorted array.
+ * The size of sorted array can be smaller than the initial array,
+ * since crit-bit sorting removes duplicate elements.
+ */
 static inline size_t critbit_sort(uintptr_t *a, size_t n);
 
 /*******************************************************************************
