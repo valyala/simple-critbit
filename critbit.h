@@ -294,7 +294,7 @@ static inline size_t critbit_sort(uintptr_t *const a, const size_t n)
   (void)offset;
 
   critbit_delete(cb);
-  return m;
+  return offset;
 }
 
 #endif
