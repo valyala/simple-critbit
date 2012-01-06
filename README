@@ -1,8 +1,8 @@
 Simple implementation of a crit-bit tree in C.
 
 It has the following limitations:
-- Keys must be unsigned even integers, which fit uintptr_t type. Pointers
-  to malloc()'ed memory are good candidates for keys.
+- Keys must be unsigned non-zero even integers, which fit uintptr_t type.
+  Pointers to malloc()'ed memory are good candidates for keys.
 - It isn't optimized for speed (yet).
 
 

@@ -3,7 +3,7 @@
 
 /*
  * Simple crit-bit implementation for C99.
- * Supports only keys of type uintptr_t.
+ * Supports only non-zero even keys of type uintptr_t.
  *
  * Author: Aliaksandr Valialkin <valyala@gmail.com>
  */
