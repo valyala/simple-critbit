@@ -6,11 +6,41 @@
 #include <stdio.h>
 #include <stdlib.h>  /* for malloc()/free() */
 
+
+static void *alloc_critbit_node(void *const ctx)
+{
+  assert(ctx == NULL);
+  return malloc(critbit_node_size());
+}
+
+static void free_critbit_node(void *const ctx, void *const node)
+{
+  assert(ctx == NULL);
+  free(node);
+}
+
+struct check_order_data
+{
+  uintptr_t prev_v;
+};
+
+static void check_order_callback(void *const ctx, const uintptr_t v)
+{
+  struct check_order_data *const data = (struct check_order_data *)ctx;
+  assert(data->prev_v < v);
+  data->prev_v = v;
+}
+
 static void test_critbit(const size_t n)
 {
-  printf("test_critbit(n=%zu)\n", n);
+  printf("test_critbit(n=%zu) ", n);
 
-  struct critbit *const cb = critbit_create();
+  const struct critbit_node_allocator node_allocator = {
+    .alloc_node = &alloc_critbit_node,
+    .free_node = &free_critbit_node,
+    .ctx = NULL,
+  };
+  struct critbit *const cb = critbit_create(&node_allocator);
   uintptr_t v;
   int rv;
 
@@ -40,6 +70,15 @@ static void test_critbit(const size_t n)
     assert(!rv);
   }
 
+  struct check_order_data data = {
+    .prev_v = 0,
+  };
+  const struct critbit_visitor check_order_visitor = {
+    .callback = &check_order_callback,
+    .ctx = &data,
+  };
+  critbit_foreach(cb, &check_order_visitor);
+
   srand(0);
   for (size_t i = 0; i < n; ++i) {
     do {
@@ -67,31 +106,8 @@ static void test_critbit(const size_t n)
   }
 
   critbit_delete(cb);
-}
 
-static void check_sort(uintptr_t *const a, const size_t n)
-{
-  for (size_t i = 1; i < n; ++i) {
-    assert(a[i - 1] < a[i]);
-  }
-}
-
-static void test_sort(const size_t n)
-{
-  printf("test_sort(n=%zu)\n", n);
-
-  uintptr_t *const a = malloc(sizeof(a[0]) * n);
-
-  for (size_t i = 0; i < n; ++i) {
-    do {
-      a[i] = rand() * 2;
-    } while (a[i] == 0);
-  }
-
-  size_t m = critbit_sort(a, n);
-  check_sort(a, m);
-
-  free(a);
+  printf("OK\n");
 }
 
 int main(void)
@@ -99,7 +115,6 @@ int main(void)
   static const size_t N = 128 * 1024;
 
   test_critbit(N);
-  test_sort(N);
 
   return 0;
 }
