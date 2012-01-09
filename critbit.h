@@ -17,10 +17,11 @@
 /* Opaque crit-bit structure. */
 struct critbit;
 
-/* Allocator for critbit_node. */
+/* Memory allocator for critbit nodes. */
 struct critbit_node_allocator
 {
-  /* Must return a pointer to memory suitable for storing a crit-bit node
+  /*
+   * Must return a pointer to memory suitable for storing a crit-bit node
    * of size critbit_node_size().
    */
   void *(*alloc_node)(void *ctx);
@@ -38,38 +39,50 @@ struct critbit_visitor
   /* The callback is called for each crit-bit item. */
   void (*callback)(void *ctx, uintptr_t v);
 
-  /* Arbitrary context, which is passed to callback. */
+  /* Arbitrary context, which is passed to the callback. */
   void *ctx;
 };
 
-/* Returns a size of a crit-bit node. The result of this function must be used
+/*
+ * Returns a size of a crit-bit node. The result of this function must be used
  * by critbit_node_allocator.
  */
 static inline size_t critbit_node_size(void);
 
-/* Creates a crit-bit. Uses alloc_node and free_node for dynamic memory
- * allocation and de-allocation of crit-bit nodes.
+/*
+ * Creates a crit-bit. Uses node_allocator for dynamic memory allocation
+ * for crit-bit nodes.
  */
 static inline struct critbit *critbit_create(
     const struct critbit_node_allocator *node_allocator);
 
-/* Deletes the given crit-bit */
+/*
+ * Deletes the given crit-bit
+ */
 static inline void critbit_delete(struct critbit *cb);
 
-/* Adds v to crit-bit. Returs 1 on success, 0 if v already exists
+/*
+ * Adds v to crit-bit. Returs 1 on success, 0 if v already exists
  * in the crit-bit.
+ * v must be non-zero even integer.
  */
 static inline int critbit_add(struct critbit *cb, uintptr_t v);
 
-/* Removes v from crit-bit. Returns 1 on success, 0 if v doesn't exist
+/*
+ * Removes v from crit-bit. Returns 1 on success, 0 if v doesn't exist
  * in the crit-bit.
+ * v must be non-zero even integer.
  */
 static inline int critbit_remove(struct critbit *cb, uintptr_t v);
 
-/* Returns 1 if crit-bit contains v, otherwise returns 0. */
+/*
+ * Returns 1 if crit-bit contains v, otherwise returns 0.
+ * v must be non-zero even integer.
+ */
 static inline int critbit_contains(const struct critbit *cb, uintptr_t v);
 
-/* Calls visitor for each crit-bit item in ascending order.
+/*
+ * Calls visitor for each crit-bit item in ascending order.
  * Do not modify crit-bit in visitor!
  */
 static inline void critbit_foreach(const struct critbit *const cb,
